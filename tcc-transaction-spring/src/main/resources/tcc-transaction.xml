@@ -35,12 +35,36 @@
 
     <task:annotation-driven/>
 
-    <bean id="recoverScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
-
-    <bean id="recoverScheduledJob" class="org.mengyun.tcctransaction.spring.recover.RecoverScheduledJob" init-method="init">
-        <property name="transactionConfigurator" ref="tccTransactionConfigurator"/>
-        <property name="transactionRecovery" ref="transactionRecovery"/>
-        <property name="scheduler" ref="recoverScheduler"/>
+    <bean id="recoverScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <ref bean="cornTrigger"/>
+        </property>
     </bean>
+
+    <!--<bean id="recoverScheduledJob" class="org.mengyun.tcctransaction.spring.recover.RecoverScheduledJob" init-method="init">-->
+        <!--<property name="transactionConfigurator" ref="tccTransactionConfigurator"/>-->
+        <!--<property name="transactionRecovery" ref="transactionRecovery"/>-->
+        <!--<property name="scheduler" ref="recoverScheduler"/>-->
+    <!--</bean>-->
+
+    <bean id="jobDetailFactoryBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="transactionRecovery" />
+        <property name="targetMethod" value="startRecover" />
+        <property name="name" value="transactionRecoveryJob"/>
+        <property name="concurrent" value="false" />
+    </bean>
+
+
+    <bean id="cornTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetailFactoryBean"/>
+        <!-- 每个10秒触发 -->
+        <property name="cronExpression">
+            <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+                <property name="targetObject" ref="tccTransactionConfigurator"/>
+                <property name="targetMethod" value="getRecoverCronExp"/>
+            </bean>
+        </property>
+    </bean>
+
 
 </beans>

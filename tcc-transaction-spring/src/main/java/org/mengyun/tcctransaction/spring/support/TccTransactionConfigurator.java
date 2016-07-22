@@ -34,4 +34,6 @@ public class TccTransactionConfigurator implements TransactionConfigurator {
     public RecoverConfig getRecoverConfig() {
         return recoverConfig;
     }
+
+    public String getRecoverCronExp(){ return recoverConfig.getCronExpression(); };
 }
