@@ -3,9 +3,10 @@ package org.mengyun.tcctransaction.spring.recover;
 import org.mengyun.tcctransaction.SystemException;
 import org.mengyun.tcctransaction.recover.TransactionRecovery;
 import org.mengyun.tcctransaction.support.TransactionConfigurator;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
-import org.springframework.scheduling.quartz.CronTriggerBean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 
 /**
@@ -29,11 +30,18 @@ public class RecoverScheduledJob {
             jobDetail.setConcurrent(false);
             jobDetail.afterPropertiesSet();
 
-            CronTriggerBean cronTrigger = new CronTriggerBean();
-            cronTrigger.setBeanName("transactionRecoveryCronTrigger");
+//            CronTriggerBean cronTrigger = new CronTriggerBean();
+//            cronTrigger.setBeanName("transactionRecoveryCronTrigger");
+//
+//            cronTrigger.setCronExpression(transactionConfigurator.getRecoverConfig().getCronExpression());
+//            cronTrigger.afterPropertiesSet();
 
-            cronTrigger.setCronExpression(transactionConfigurator.getRecoverConfig().getCronExpression());
-            cronTrigger.afterPropertiesSet();
+            //修改为spring4以后的支持方式
+            CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+            cronTriggerFactoryBean.setBeanName("transactionRecoveryCronTrigger");
+            cronTriggerFactoryBean.setCronExpression(transactionConfigurator.getRecoverConfig().getCronExpression());
+            cronTriggerFactoryBean.afterPropertiesSet();
+            CronTrigger cronTrigger = cronTriggerFactoryBean.getObject();
 
             scheduler.scheduleJob((JobDetail) jobDetail.getObject(), cronTrigger);
 
