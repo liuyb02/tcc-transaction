@@ -3,12 +3,12 @@ package org.mengyun.tcctransaction.repository;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.mengyun.tcctransaction.OptimisticLockException;
 import org.mengyun.tcctransaction.Transaction;
 import org.mengyun.tcctransaction.TransactionRepository;
 import org.mengyun.tcctransaction.api.TransactionXid;
 
 import javax.transaction.xa.Xid;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +37,7 @@ public abstract class CachableTransactionRepository implements TransactionReposi
         if (result > 0) {
             putToCache(transaction);
         } else {
-            throw new ConcurrentModificationException();
+            throw new OptimisticLockException();
         }
         return result;
     }
@@ -77,25 +77,9 @@ public abstract class CachableTransactionRepository implements TransactionReposi
 
         return transactions;
     }
-//
-//    @Override
-//    public void addErrorTransaction(Transaction transaction) {
-//        putToErrorCache(transaction);
-//    }
-//
-//    @Override
-//    public void removeErrorTransaction(Transaction transaction) {
-//        removeFromErrorCache(transaction);
-//    }
-//
-//    @Override
-//    public Collection<Transaction> findAllErrorTransactions() {
-//        return findAllFromErrorCache();
-//    }
 
     public CachableTransactionRepository() {
         transactionXidCompensableTransactionCache = CacheBuilder.newBuilder().expireAfterAccess(expireDuration, TimeUnit.SECONDS).maximumSize(1000).build();
-//        errorTransactionXidCompensableTransactionCache = CacheBuilder.newBuilder().expireAfterAccess(expireDuration, TimeUnit.SECONDS).maximumSize(1000).build();
     }
 
     protected void putToCache(Transaction transaction) {
@@ -109,18 +93,6 @@ public abstract class CachableTransactionRepository implements TransactionReposi
     protected Transaction findFromCache(TransactionXid transactionXid) {
         return transactionXidCompensableTransactionCache.getIfPresent(transactionXid);
     }
-//
-//    protected void putToErrorCache(Transaction transaction) {
-//        errorTransactionXidCompensableTransactionCache.put(transaction.getXid(), transaction);
-//    }
-//
-//    protected void removeFromErrorCache(Transaction transaction) {
-//        errorTransactionXidCompensableTransactionCache.invalidate(transaction.getXid());
-//    }
-//
-//    protected Collection<Transaction> findAllFromErrorCache() {
-//        return errorTransactionXidCompensableTransactionCache.asMap().values();
-//    }
 
     public final void setExpireDuration(int durationInSeconds) {
         this.expireDuration = durationInSeconds;
