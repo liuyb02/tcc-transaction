@@ -36,6 +36,7 @@
     <task:annotation-driven/>
 
     <bean id="recoverScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="startupDelay" value="30"/>
         <property name="triggers">
             <ref bean="cornTrigger"/>
         </property>
