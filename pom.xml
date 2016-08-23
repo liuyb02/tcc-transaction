@@ -7,7 +7,7 @@
     <groupId>org.mengyun</groupId>
     <artifactId>tcc-transaction</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.3-SNAPSHOT</version>
     <modules>
         <module>tcc-transaction-core</module>
         <module>tcc-transaction-api</module>
@@ -30,6 +30,7 @@
         <repo.proxy.url>http://repo1.maven.org/maven2</repo.proxy.url>
 
         <repo.external.url>http://repo1.maven.org/maven2</repo.external.url>
+
     </properties>
 
 
@@ -390,12 +391,12 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus-server</id>
+            <id>repo.releases</id>
             <name>internal corporate repository</name>
             <url>${repo.internal.releases.url}</url>
         </repository>
         <snapshotRepository>
-            <id>nexus-server</id>
+            <id>repo.snapshots</id>
             <name>internal corporate snapshots repository</name>
             <url>${repo.internal.snapshots.url}</url>
         </snapshotRepository>
