@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
@@ -23,11 +24,12 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public String placeOrder() {
+    public String placeOrder(@RequestParam("payerId") String payerId,
+                             @RequestParam("shopId") String shopId ) {
 
         PlaceOrderRequest request = buildRequest();
 
-        placeOrderService.placeOrder(request.getPayerUserId(), request.getShopId(),
+        placeOrderService.placeOrder(Integer.parseInt(payerId), Integer.parseInt(shopId),
                 request.getProductQuantities(), request.getRedPacketPayAmount());
         return "success";
     }
